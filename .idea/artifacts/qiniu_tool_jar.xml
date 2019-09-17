@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact name="qiniu_tool:jar">
+    <output-path>$PROJECT_DIR$/classes/artifacts/qiniu_tool_jar</output-path>
+    <root id="root">
+      <element id="archive" name="qiniu_tool.jar">
+        <element id="module-output" name="qiniu_tool" />
+      </element>
+      <element id="library" level="module" name="gson-2.3.1.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="org.json-chargebee-1.0.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="httpclient-4.2.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="qiniu-java-sdk-7.0.4.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="commons-codec-1.9.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="okio-1.3.0-SNAPSHOT.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="httpcore-4.2.1.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="bingo_sqlp-1.0.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="sqlite-jdbc-3.7.2.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="commons-logging-1.2.jar" module-name="qiniu_tool" />
+      <element id="library" level="module" name="okhttp-2.3.0-SNAPSHOT.jar" module-name="qiniu_tool" />
+    </root>
+  </artifact>
+</component>
