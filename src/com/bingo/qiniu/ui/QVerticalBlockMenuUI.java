@@ -36,9 +36,9 @@ public class QVerticalBlockMenuUI extends BasicPanelUI {
 
 		ts = bw / 4;
 		if (menu.getElements() != null && !menu.getElements().isEmpty()) {
-			Graphics2D g2d = (Graphics2D) g.create();
+			Graphics2D g2d = (Graphics2D) g;
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2d.setFont(menu.getFont());
+//			g2d.setFont(menu.getFont());
 			FontMetrics fm = SwingUtilities2.getFontMetrics(menu, menu.getFont());
 			int th = (menu.getBlockHeight() + fm.getAscent() - fm.getDescent()) / 2;
 			int y = 0;
@@ -48,7 +48,7 @@ public class QVerticalBlockMenuUI extends BasicPanelUI {
 				QVerticalBlockMenu.QMenuElement ele = menu.getElements().get(start);
 				start ++;
 				drawCount --;
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, menu.getAlphaf()));
+//				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, menu.getAlphaf()));
 				if (ele.equals(menu.getSelectedElement())) {
 					g2d.setColor(menu.getItemSelectedColor());
 				} else {
@@ -59,7 +59,7 @@ public class QVerticalBlockMenuUI extends BasicPanelUI {
 					g2d.setColor(menu.getBottomColor());
 					g2d.fillRect(0, y + menu.getBlockHeight() - menu.getBottomHeight(), bw, menu.getBottomHeight());
 				}
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+//				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 
 				g2d.setColor(menu.getForeground());
 				g2d.drawString(ele.getText(), ts, y + th);
