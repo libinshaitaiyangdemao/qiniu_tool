@@ -649,9 +649,9 @@ public class WorkPane extends JPanel {
 							sm.setPersent(1f * finishBit / flength);
 						}
 					});
-//					Response res = resumeUploader.upload();
+					Response res = resumeUploader.upload();
 					// 打印返回的信息
-//					System.out.println(res.bodyString());
+					System.out.println(res.bodyString());
 					s.setStatus(QUploadSubjectModel.UPLOAD_STATUS_FINISH_SUCCESS);
 					synchronized (uploadInfo) {
 						uploadInfo.success++;
