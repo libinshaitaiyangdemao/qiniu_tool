@@ -1,13 +1,8 @@
 package com.bingo.qiniu.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-
 import com.bingo.qiniu.listener.QActionEvent;
 import com.bingo.qiniu.listener.QActionListener;
+import com.bingo.qiniu.model.BlockInfo;
 import com.bingo.qiniu.model.QUploadModel;
 import com.bingo.qiniu.model.QiniuKey;
 import com.bingo.qiniu.process.DBProcessor;
@@ -18,6 +13,13 @@ import com.bingo.qiniu.view.ConfigurePane;
 import com.bingo.qiniu.view.ContentPanel;
 import com.bingo.qiniu.view.Frame;
 import com.bingo.qiniu.view.WorkPane;
+
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class QUploadController implements QActionListener {
 
@@ -111,6 +113,9 @@ public class QUploadController implements QActionListener {
 		List<QiniuKey> keys = processor.getAllQiniuKeys();
 		if (keys != null && !keys.isEmpty()) {
 			Model.getInstance().setKeys(keys);
+			//加载block info
+			List<BlockInfo> blockInfos = processor.getAllBlockInfos();
+			Model.getInstance().setBlockInfos(blockInfos);
 			invokeWithUIThread(new Runnable() {
 
 				@Override
@@ -154,6 +159,7 @@ public class QUploadController implements QActionListener {
 
 			case QConstants.UPLOAD_START:
 				frame.menuEnabled(false);
+				saveVestige((WorkPane.UploadInfo) event.get(WorkPane.UPLOAD_INFO_EVENT_KEY));
 				break;
 			case QConstants.UPLOAD_OVER:
 				frame.menuEnabled(true);
@@ -163,6 +169,45 @@ public class QUploadController implements QActionListener {
 		}
 	}
 
+	private void saveVestige(WorkPane.UploadInfo info){
+		BlockInfo blockInfo = null;
+		List<BlockInfo> blocks = Model.getInstance().getCurrentBlockInfos();
+		if(blocks != null && !blocks.isEmpty()){
+			for (BlockInfo block : blocks) {
+				if(block.getName().equals(info.getBlacket())){
+					blockInfo = block;
+					break;
+				}
+			}
+		}
+		boolean doSave = false;
+		if(blockInfo == null){
+			blockInfo = new BlockInfo();
+			blockInfo.setQiniuKeyId(Model.getInstance().getCurrentKey().getId());
+			blockInfo.setName(info.getBlacket());
+			blockInfo.setHost(info.getUrl());
+			blockInfo.setKeyList(Arrays.asList(info.getKey()));
+			doSave = true;
+		}else{
+			if(!Objects.equals(blockInfo.getHost(),info.getUrl())){
+				blockInfo.setHost(info.getUrl());
+				doSave = true;
+			}
+			List<String> keyList = blockInfo.getkeyList();
+			if(keyList == null || !keyList.contains(info.getKey())){
+				if(keyList == null){
+					keyList = new ArrayList<>();
+				}
+				keyList.add(info.getKey());
+				blockInfo.setKeyList(keyList);
+				doSave = true;
+			}
+		}
+		if(doSave){
+			processor.saveBlockInfo(blockInfo);
+			Model.getInstance().setBlockInfos(processor.getAllBlockInfos());
+		}
+	}
 	private void chooseFiles(final QActionEvent event) {
 		frame.getGlassPane().setVisible(true);
 	}
@@ -177,6 +222,8 @@ public class QUploadController implements QActionListener {
 					if (blackets != null && !blackets.isEmpty()) {
 						workPane.updateMenu(blackets.toArray(new String[0]));
 						workPane.uploadInfo();
+					}else{
+						workPane.setVisible(false);
 					}
 					invokeWithUIThread(new Runnable() {
 

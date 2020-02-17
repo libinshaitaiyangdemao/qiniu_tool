@@ -1,9 +1,9 @@
 package com.bingo.qiniu.component;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -65,9 +65,18 @@ public class QDownTextField extends JPanel implements ActionListener {
 		menuItem.setFont(WidgetUtils.SMALL_FONT);
 		popupMenu.add(menuItem);
 		menuItem.addActionListener(this);
+		if(textField.getText() == null || textField.getText().trim().isEmpty()){
+			textField.setText(item);
+		}
 		return this;
 	}
-
+	public void clean(){
+		Component[] components = popupMenu.getComponents();
+		if(components != null && components.length > 0){
+			Arrays.stream(components).forEach(popupMenu::remove);
+		}
+		textField.setText("");
+	}
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
 		super.setBounds(x, y, width, height);

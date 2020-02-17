@@ -8,7 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
 
@@ -105,14 +105,19 @@ public class QUploadBlockUI extends BasicPanelUI {
 	private void paintText(Graphics2D g, QUploadBlock block, boolean finished) {
 		FontMetrics fm = SwingUtilities2.getFontMetrics(block, block.getFont());
 		g.setColor(block.getForeground());
-		int y = (block.getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+		int ascent = fm.getAscent();
+		int descent = fm.getDescent();
+		int h = ascent - descent;
+		int y = (block.getHeight() - h * 2 - 10) / 2 + h ;
 		int x = 20;
 		g.drawString(block.getSubjectModel().getLocationUrl(), x, y);
-		x = block.getWidth() / 3;
+
 		if (block.getSubjectModel().getUrl() != null) {
+			y = y + 10 + h;
 			g.drawString(block.getSubjectModel().getUrl(), x, y);
 		}
 		x = block.getWidth() - block.getWidth() / 3;
+		y = (block.getHeight() - (ascent + descent)) / 2 + ascent;
 		g.drawString(block.getSubjectModel().getFileSize(), x, y);
 		if (!finished) {
 			String pt = block.getSubjectModel().persentText();

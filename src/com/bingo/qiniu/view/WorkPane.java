@@ -37,6 +37,7 @@ import com.bingo.qiniu.component.QVerticalBlockMenu;
 import com.bingo.qiniu.listener.QActionEvent;
 import com.bingo.qiniu.listener.QActionListener;
 import com.bingo.qiniu.listener.QFileInputstreamListener;
+import com.bingo.qiniu.model.BlockInfo;
 import com.bingo.qiniu.model.QUploadModel;
 import com.bingo.qiniu.model.QUploadSubjectModel;
 import com.bingo.qiniu.upload.CustomResumeUploader;
@@ -59,6 +60,8 @@ public class WorkPane extends JPanel {
 	private ExecutorService executor = Executors.newFixedThreadPool(5);
 
 	private static String MESSAGE_MODEL = "当前为%s 共有文件%d个 成功上传%d个 失败%d个";
+
+	public static final String UPLOAD_INFO_EVENT_KEY = "UPLOAD_INFO_EVENT_KEY";
 
 	private QVerticalBlockMenu menu;
 
@@ -110,7 +113,7 @@ public class WorkPane extends JPanel {
 
 	private QDynamicImage loading;
 
-	private class UploadInfo {
+	public static class UploadInfo {
 		boolean uploading;
 
 		private String url;
@@ -126,6 +129,38 @@ public class WorkPane extends JPanel {
 		private boolean cover;
 
 		private String blacket;
+
+		public boolean isUploading() {
+			return uploading;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public int getTotal() {
+			return total;
+		}
+
+		public int getFailed() {
+			return failed;
+		}
+
+		public int getSuccess() {
+			return success;
+		}
+
+		public boolean isCover() {
+			return cover;
+		}
+
+		public String getBlacket() {
+			return blacket;
+		}
 	}
 
 	private UploadInfo uploadInfo;
@@ -177,6 +212,25 @@ public class WorkPane extends JPanel {
 		@Override
 		public void action(QActionEvent event) {
 			uploadInfo.blacket = (String) event.get(QVerticalBlockMenu.ACTION_SELECTED_KEY);
+			updateVestige();
+		}
+		private void updateVestige(){
+			String block = uploadInfo.blacket;
+			keyDownTextField.clean();
+			hostTextField.setText("");
+			List<BlockInfo> blockInfos = Model.getInstance().getCurrentBlockInfos();
+			if(blockInfos != null && !blockInfos.isEmpty()){
+				for (BlockInfo blockInfo : blockInfos) {
+					if(blockInfo.getName().equals(block)){
+						hostTextField.setText(blockInfo.getHost());
+						List<String> kls = blockInfo.getkeyList();
+						if(kls != null && !kls.isEmpty()){
+							kls.forEach(keyDownTextField::addDownItem);
+						}
+						break;
+					}
+				}
+			}
 		}
 
 		@Override
@@ -221,6 +275,7 @@ public class WorkPane extends JPanel {
 	private void fireActionListeners(int key) {
 		if (listeners != null && !listeners.isEmpty()) {
 			Map<Object, Object> map = new HashMap<>();
+			map.put(UPLOAD_INFO_EVENT_KEY,uploadInfo);
 			QActionEvent event = new QActionEvent(map);
 			event.setKey(key);
 			for (QActionListener listener : listeners) {
@@ -594,9 +649,9 @@ public class WorkPane extends JPanel {
 							sm.setPersent(1f * finishBit / flength);
 						}
 					});
-					Response res = resumeUploader.upload();
+//					Response res = resumeUploader.upload();
 					// 打印返回的信息
-					System.out.println(res.bodyString());
+//					System.out.println(res.bodyString());
 					s.setStatus(QUploadSubjectModel.UPLOAD_STATUS_FINISH_SUCCESS);
 					synchronized (uploadInfo) {
 						uploadInfo.success++;
